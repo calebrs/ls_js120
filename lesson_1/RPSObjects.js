@@ -1,11 +1,43 @@
 const readline = require("readline-sync");
 
-function createPlayer(playerType) {
+function createMove() {
   return {
-    playerType,
+
+  }
+}
+
+function createRule() {
+  return {
+    
+  }
+}
+
+function createPlayer() {
+  return {
+    move: null,
+  };
+}
+
+function createComputer() {
+  let playerObject = createPlayer();
+
+  let computerObject = {
     move: null,
 
+    choose() {
+      const choices = ['rock', 'paper', 'scissors'];
+      let randomIndex = Math.floor(Math.random() * choices.length);
+      this.move = choices[randomIndex];
+    },
+  };
 
+  return Object.assign(playerObject, computerObject);
+}
+
+function createHuman() {
+  let playerObject = createPlayer();
+  
+  let humanObject = {
     choose() {
       if (this.isHuman()) {
         let choice;
@@ -24,16 +56,14 @@ function createPlayer(playerType) {
         this.move = choices[randomIndex]; 
       }
     },
+  };
 
-    isHuman() {
-      return this.playerType === 'human';
-    }
-  }
+  return Object.assign(playerObject, humanObject);
 }
 
 const RPSGame = {
-  human: createPlayer('human'),
-  computer: createPlayer('computer'),
+  human: createHuman(),
+  computer: createComputer(),
 
   displayWelcomeMessage() {
     console.log('Welcome to Rock, Paper, Scissors!');
