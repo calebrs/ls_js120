@@ -27,7 +27,8 @@ function createRule() {
 function createPlayer() {
   return {
     move: null,
-    score: 0
+    score: 0,
+    moveHistory: []
   };
 }
 
@@ -85,6 +86,9 @@ const RPSGame = {
   displayWinner() {
     let humanMove = this.human.move;
     let computerMove = this.computer.move;
+    
+    this.human.moveHistory.push(humanMove);
+    this.computer.moveHistory.push(computerMove);
 
     console.log(`You chose: ${this.human.move}`);
     console.log(`The computer chose: ${this.computer.move}`);
@@ -100,8 +104,14 @@ const RPSGame = {
     }
   },
   
+  displayHistory() {
+    console.log(`Human move history: ${this.human.moveHistory.join(', ')}`);
+    console.log(`Computer move history: ${this.computer.moveHistory.join(', ')}`);
+  },
+  
   displayScore() {
-    console.log(`Human Score: ${this.human.score} Computer score: ${this.computer.score}`);
+    console.log(`Human Score: ${this.human.score}`);
+    console.log(`Computer Score: ${this.computer.score}`);
   },
   
   displayChampion() {
@@ -122,6 +132,7 @@ const RPSGame = {
         this.computer.choose();
         this.displayWinner();
         this.displayScore();
+        this.displayHistory();
         if (this.computer.score === 5 || this.human.score === 5) {
           this.displayChampion();
           break;
