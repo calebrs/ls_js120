@@ -1,11 +1,5 @@
 const readline = require("readline-sync");
 
-function createMove() {
-  return {
-
-  };
-}
-
 function createRule() {
   return {
     compare(humanMove, computerMove) {
@@ -43,6 +37,7 @@ function createComputer() {
       let randomIndex = Math.floor(Math.random() * choices.length);
       this.move = choices[randomIndex];
     },
+
   };
 
   return Object.assign(playerObject, computerObject);
@@ -58,12 +53,13 @@ function createHuman() {
       while (true) {
         console.log('Please choose rock, paper, scissors, lizard, or spock:');
         choice = readline.question();
-        if (['rock', 'paper', 'scissors', 'spock', 'lizard'].includes(choice)) break;
+        if (['rock', 'paper', 'scissors', 'spock', 'lizard'].includes(choice)) {
+          break;
+        }
         console.log('Sorry, invalid choice');
       }
 
       this.move = choice;
-
     },
   };
 
@@ -86,9 +82,6 @@ const RPSGame = {
   displayWinner() {
     let humanMove = this.human.move;
     let computerMove = this.computer.move;
-    
-    this.human.moveHistory.push(humanMove);
-    this.computer.moveHistory.push(computerMove);
 
     console.log(`You chose: ${this.human.move}`);
     console.log(`The computer chose: ${this.computer.move}`);
@@ -102,20 +95,23 @@ const RPSGame = {
     } else {
       console.log("It's a tie!");
     }
+
+    this.human.moveHistory.push(humanMove);
+    this.computer.moveHistory.push(computerMove);
   },
-  
+
+  displayChampion() {
+    console.log(`The grand champion is ${this.human.score === 5 ? 'Human!' : 'Computer!'}`);
+  },
+
   displayHistory() {
     console.log(`Human move history: ${this.human.moveHistory.join(', ')}`);
     console.log(`Computer move history: ${this.computer.moveHistory.join(', ')}`);
   },
-  
+
   displayScore() {
     console.log(`Human Score: ${this.human.score}`);
     console.log(`Computer Score: ${this.computer.score}`);
-  },
-  
-  displayChampion() {
-    console.log(`The grand champion is ${this.human.score === 5 ? 'Human!' : 'Computer!'}`);
   },
 
   playAgain() {
@@ -127,6 +123,8 @@ const RPSGame = {
   play() {
     while (true) {
       this.displayWelcomeMessage();
+      this.computer.score = 0;
+      this.human.score = 0;
       while (true) {
         this.human.choose();
         this.computer.choose();
