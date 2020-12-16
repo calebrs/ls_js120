@@ -1,14 +1,14 @@
-let foo = {
-  a: 1,
-  b: 2,
+let obj = {
+  a: 'hello',
+  b: 'world',
+  foo: function() {
+    function bar() {
+      console.log(this.a + ' ' + this.b);
+    }
+
+    bar.call(this);
+  },
+  
 };
 
-let bar = {
-   a: 'abc',
-   b: 'def',
-   add: function() {
-     return this.a + this.b;
-   },
-};
-
-console.log(bar.add.call(foo));
+console.log(obj.foo());        // => undefined undefined
