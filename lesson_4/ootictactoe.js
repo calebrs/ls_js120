@@ -1,3 +1,5 @@
+let readline = require('readline-sync');
+
 class Square {
   static UNUSED_SQUARE = " ";
   static HUMAN_MARKER = "X";
@@ -10,15 +12,23 @@ class Square {
   toString() {
     return this.marker;
   }
+
+  setMarker(marker) {
+    this.marker = marker;
+  }
 }
 
 class Board {
   constructor() {
     this.squares = {};
-    for (let counter = 1; counter <= 9; counter += 1) {
+    for (let counter = 1; counter <= 9; ++counter) {
       this.squares[String(counter)] = new Square();
     }
     
+  }
+
+  markSquareAt(key, marker) {
+    this.squares[key].setMarker(marker);
   }
   
   display() {
@@ -44,15 +54,13 @@ class Row {
   }
 }
 
-class Marker {
-  constructor() {
-    
-  }
-}
-
 class Player {
-  constructor() {
-    
+  constructor(marker) {
+    this.marker = marker;
+  }
+
+  getMarker() {
+    return this.marker;
   }
   
   mark() {
@@ -66,19 +74,21 @@ class Player {
 
 class Human extends Player {
   constructor() {
-    
+    super(Square.HUMAN_MARKER);
   }
 }
 
 class Computer extends Player {
   constructor() {
-    
+    super(Square.COMPUTER_MARKER);
   }
 }
 
 class TTTGame {
   constructor() {
     this.board = new Board();
+    this.human = new Human();
+    this.computer = new Computer();
   }
   
   play() {
@@ -88,10 +98,12 @@ class TTTGame {
     while (true) {
       this.board.display();
       
-      this.firstPlayerMoves();
+      this.humanMoves();
+      this.board.display();
       if (this.gameOver()) break;
       
-      this.secondPlayerMoves();
+      this.computerMoves();
+      this.board.display();
       if (this.gameOver()) break;
       break;
     }
@@ -113,12 +125,27 @@ class TTTGame {
   }
   
   
-  firstPlayerMoves() {
-    
+  humanMoves() {
+    let choice;
+
+    while (true) {
+      choice = readline.question('Choose a square between 1 and 9: ');
+
+      let integerValue = parseInt(choice, 10);
+      if (integerValue >= 1 && integerValue <= 9) {
+        break;
+      }
+
+      console.log("Sorry, that's not a valid choice.");
+      console.log("");
+    }
+
+    this.board.markSquareAt(choice, this.human.getMarker());
   }
   
-  secondPlayerMoves() {
-    
+  computerMoves() {
+    let choice = Math.floor((9 * Math.random()) + 1);
+    this.board.markSquareAt(choice, this.computer.getMarker());
   }
   
   gameOver() {
