@@ -49,7 +49,11 @@ class Board {
 
   unusedSquares() {
     let keys = Object.keys(this.squares);
-    return keys.filter(key => this.squares[key].isUnused());
+    return keys.filter(key => this.isUnusedSquare(key));
+  }
+
+  isUnusedSquare(key) {
+    return this.squares[key].isUnused();
   }
 
   markSquareAt(key, marker) {
@@ -118,8 +122,16 @@ class TTTGame {
   }
 
   play() {
-    this.displayWelcomeMessage();
+    while (true) {
+      this.playOnce();
+      if (!this.playAgain()) break;
+      this.board = new Board();
+    }
+    this.displayGoodbyeMessage();
+  }
 
+  playOnce() {
+    this.displayWelcomeMessage();
 
     while (true) {
       this.board.display();
@@ -132,11 +144,20 @@ class TTTGame {
 
       console.clear();
     }
-
     console.clear();
     this.board.display();
     this.displayResults();
-    this.displayGoodbyeMessage();
+  }
+
+  playAgain() {
+    let choice;
+
+    while (true) {
+      choice = readline.question("Play again? (y/n): ").toLowerCase();
+      if (choice === 'y' || choice === 'n') break;
+      console.log('Invalid Input.')
+    }
+    return choice === 'y';
   }
 
   displayWelcomeMessage() {
@@ -157,6 +178,13 @@ class TTTGame {
     }
   }
 
+  joinOr(arr) {
+    if (arr.length > 1) {
+      arr.splice(arr.length - 1, 0, 'or');
+    }
+    return arr.join(', '); 
+  }
+
   isWinner(player) {
     return TTTGame.POSSIBLE_WINNING_ROWS.some(row => {
       return this.board.countMarkersFor(player, row) === 3;
@@ -168,7 +196,7 @@ class TTTGame {
 
     while (true) {
       let validChoices = this.board.unusedSquares();
-      const prompt = `Choose a sqare (${validChoices.join(', ')}): `;
+      const prompt = `Choose a sqare (${this.joinOr(validChoices)}): `;
       choice = readline.question(prompt);
 
       if (validChoices.includes(choice)) break;
@@ -180,14 +208,36 @@ class TTTGame {
     this.board.markSquareAt(choice, this.human.getMarker());
   }
 
+  defensiveComputerMove() {
+    for (let indx = 0; indx < TTTGame.POSSIBLE_WINNING_ROWS.length; ++indx) {
+      let row = TTTGame.POSSIBLE_WINNING_ROWS[indx]
+      let key = this.atRiskSquare(row);
+      if (key) return key;
+    }
+
+    return null;
+  }
+
+  atRiskSquare(row) {
+    if (this.board.countMarkersFor(this.human, row) === 2) {
+      let indx = row.findIndex(key => this.board.isUnusedSquare(key));
+      if (indx >= 0) return row[indx];
+    }
+
+    return null;
+  }
+
   computerMoves() {
-    let validChoices = this.board.unusedSquares();
-    let choice;
+    let choice = this.defensiveComputerMove();
 
-    do {
-      choice = Math.floor((9 * Math.random()) + 1).toString();
-    } while (!validChoices.includes(choice));
+    if (!choice) {
+      let validChoices = this.board.unusedSquares();
 
+      do {
+        choice = Math.floor((9 * Math.random()) + 1).toString();
+        } while (!validChoices.includes(choice));
+    }
+    
     this.board.markSquareAt(choice, this.computer.getMarker());
   }
 
