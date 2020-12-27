@@ -80,6 +80,7 @@ class Board {
 class Player {
   constructor(marker) {
     this.marker = marker;
+    this.score = 0;
   }
 
   getMarker() {
@@ -122,27 +123,32 @@ class TTTGame {
   }
 
   play() {
+    this.displayWelcomeMessage();
     while (true) {
+      this.board.display();
       this.playOnce();
-      if (!this.playAgain()) break;
+      
+      if (this.human.score === 3 || this.computer.score === 3) break;
       this.board = new Board();
     }
+    this.displayWinner();
     this.displayGoodbyeMessage();
   }
 
   playOnce() {
-    this.displayWelcomeMessage();
+    
 
     while (true) {
-      this.board.display();
+      
 
       this.humanMoves();
       if (this.gameOver()) break;
 
       this.computerMoves();
       if (this.gameOver()) break;
-
       console.clear();
+      this.board.display();
+      
     }
     console.clear();
     this.board.display();
@@ -168,14 +174,25 @@ class TTTGame {
     console.log("Thanks for playing Tic Tac Toe! Goodbye!");
   }
 
+  displayWinner() {
+    if (this.human.score === 3) {
+      console.log('Human won the match!');
+    } else {
+      console.log('Computer won the match!');
+    }
+  }
+
   displayResults() {
     if (this.isWinner(this.human)) {
-      console.log('You won! Congratulations!');
+      console.log('You won the round! Congratulations!');
+      this.human.score += 1;
     } else if (this.isWinner(this.computer)) {
-      console.log('I won! I won! Take that, human!');
+      console.log('I won the round! Take that, human!');
+      this.computer.score += 1;
     } else {
       console.log("It's a tie game. How boring.");
     }
+    console.log(`Human: ${this.human.score} Computer: ${this.computer.score}`)
   }
 
   joinOr(arr) {
@@ -235,8 +252,16 @@ class TTTGame {
     return null;
   }
 
+  pickCenterSquare() {
+    return this.board.isUnusedSquare("5") ? "5" : null;
+  }
+
   computerMoves() {
     let choice = this.offensiveComputerMove();
+    if (!choice) {
+      choice = this.pickCenterSquare();
+    }
+
     if (!choice) {
       choice = this.defensiveComputerMove();
     }
