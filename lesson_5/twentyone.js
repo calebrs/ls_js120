@@ -1,19 +1,6 @@
-/*
-Classes:
-Participant => player, dealer
-game => orchestration engine
-welcome to game
-players turn 
-dealers turn
-decide winner
-play again?
-INCLUDE DOLLAR AOUNTS THAT THE OLAYER HAS
+let readline = require("readline-sync");
+let shuffle = require("shuffle-array");
 
-
-deck =>
-card => 
-
-*/
 function Card() {
       //STUB
       // What sort of state does a card need?
@@ -32,8 +19,14 @@ Deck.prototype.deal = function() {
       //STUB
       // does the dealer or the deck deal?
 }
+
+Deck.prototype.shuffle = function() {
+    //use shuffle package
+}
   
 function Participant() {
+    this.hand = [];
+    this.money = 0;
       //STUB
       // What sort of state does a participant need?
       // Score? Hand? Amount of money available?
@@ -57,6 +50,7 @@ Participant.prototype.score = function() {
 }
 
 function Player() {
+    Participant.call(this);
       //STUB
       // What sort of state does a player need?
       // Score? Hand? Amount of money available?
@@ -66,6 +60,7 @@ Player.prototype = Object.create(Participant.prototype);
 Player.prototype.constructor = Player;
 
 function Dealer() {
+    Participant.call(this);
     // Very similar to a Player; do we need this?
     //STUB
     // What sort of state does a dealer need?
@@ -88,6 +83,9 @@ Dealer.prototype.deal = function() {
 }
 
 function TwentyOneGame() {
+    this.deck = new Deck();
+    this.player = new Player();
+    this.dealer = new Dealer();
       //STUB
       // What sort of state does the game need?
       // A deck? Two participants?
