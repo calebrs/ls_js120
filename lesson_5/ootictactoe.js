@@ -86,10 +86,6 @@ class Player {
   getMarker() {
     return this.marker;
   }
-
-  mark() {
-
-  }
 }
 
 class Human extends Player {
@@ -120,40 +116,52 @@ class TTTGame {
     this.board = new Board();
     this.human = new Human();
     this.computer = new Computer();
+    this.firstPlayer = this.human;
   }
 
   play() {
     this.displayWelcomeMessage();
+    
     while (true) {
       this.board.display();
       this.playOnce();
       
       if (this.human.score === 3 || this.computer.score === 3) break;
       this.board = new Board();
+      this.firstPlayer = this.togglePlayer(this.firstPlayer);
     }
     this.displayWinner();
     this.displayGoodbyeMessage();
   }
 
+  togglePlayer(player) {
+    return player === this.human ? this.computer : this.human;
+  }
+
   playOnce() {
-    
+    let currentPlayer = this.firstPlayer;
 
     while (true) {
-      
-
-      this.humanMoves();
+      this.playerMoves(currentPlayer);
       if (this.gameOver()) break;
 
-      this.computerMoves();
-      if (this.gameOver()) break;
       console.clear();
       this.board.display();
-      
+      currentPlayer = this.togglePlayer(currentPlayer);
     }
     console.clear();
     this.board.display();
     this.displayResults();
   }
+
+  playerMoves(currentPlayer) {
+    if (currentPlayer instanceof Human) {
+      this.humanMoves();
+    } else {
+      this.computerMoves();
+    }
+  } 
+  
 
   playAgain() {
     let choice;
@@ -181,7 +189,7 @@ class TTTGame {
       console.log('Computer won the match!');
     }
   }
-
+  
   displayResults() {
     if (this.isWinner(this.human)) {
       console.log('You won the round! Congratulations!');
