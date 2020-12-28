@@ -169,7 +169,7 @@ class TTTGame {
     while (true) {
       choice = readline.question("Play again? (y/n): ").toLowerCase();
       if (choice === 'y' || choice === 'n') break;
-      console.log('Invalid Input.')
+      console.log('Invalid Input.');
     }
     return choice === 'y';
   }
@@ -207,7 +207,7 @@ class TTTGame {
     if (arr.length > 1) {
       arr.splice(arr.length - 1, 0, 'or');
     }
-    return arr.join(', '); 
+    return arr.join(', ');
   }
 
   isWinner(player) {
@@ -238,7 +238,7 @@ class TTTGame {
   }
 
   offensiveComputerMove() {
-    return this.findCriticalSquare(this.computer)
+    return this.findCriticalSquare(this.computer);
   }
 
   findCriticalSquare(player) {
@@ -278,9 +278,9 @@ class TTTGame {
 
       do {
         choice = Math.floor((9 * Math.random()) + 1).toString();
-        } while (!validChoices.includes(choice));
+      } while (!validChoices.includes(choice));
     }
-    
+
     this.board.markSquareAt(choice, this.computer.getMarker());
   }
 
