@@ -1,36 +1,65 @@
 let readline = require("readline-sync");
 let shuffle = require("shuffle-array");
+const NUMBER_OF_CARDS_IN_A_SUIT = 13;
+const NUMBER_OF_SUITS = 4;
 
 function Card() {
-      //STUB
-      // What sort of state does a card need?
-      // Rank? Suit? Points?
+  this.suit = '';
+  this.name = '';
+  this.value = 0;
 }
 
 function Deck() {
-      //STUB
-      // What sort of state does a deck need?
-      // 52 Cards?
-      // obviously, we need some data structure to keep track of cards
-      // array, object, something else?
+  this.cards = this.initialize52CardDeck();
 }
 
-Deck.prototype.deal = function() {
-      //STUB
-      // does the dealer or the deck deal?
+Deck.prototype.initialize52CardDeck = function() {
+  let newDeck = [];
+  for (let suit = 1; suit <= NUMBER_OF_SUITS; suit += 1) {
+    for (let card = 1; card <= NUMBER_OF_CARDS_IN_A_SUIT; card += 1) {
+      let newCard = new Card();
+      newCard.value = card;
+
+      if (card === 1) {
+        newCard.name = 'Ace';
+      } else if (card === 11) {
+        newCard.name = 'Jack';
+      } else if (card === 12) {
+        newCard.name = 'Queen';
+      } else if (card === 13) {
+        newCard.name = 'King';
+      } else {
+        newCard. name = String(card);
+      }
+
+      if (suit === 1) {
+        newCard.suit = 'Spades';
+      } else if (suit === 2) {
+        newCard.suit = 'Hearts';
+      } else if (suit === 3) {
+        newCard.suit = 'Clubs';
+      } else if (suit === 4) {
+        newCard.suit = 'Diamonds';
+      }
+
+      if (newCard.name === 'Queen' || newCard.name === 'King' || newCard.name === 'Jack') {
+        newCard.value = 10;
+      } else {
+        newCard.value = card;
+      }
+      newDeck.push(newCard);
+    }
+  }
+  shuffle(newDeck);
+  return newDeck;
 }
 
-Deck.prototype.shuffle = function() {
-    //use shuffle package
+Deck.prototype.deal = function(player) {
+  player.hand.push(this.cards.pop());
 }
   
 function Participant() {
-    this.hand = [];
-    this.money = 0;
-      //STUB
-      // What sort of state does a participant need?
-      // Score? Hand? Amount of money available?
-      // What else goes here? all the redundant behaviors from Player and Dealer?
+  this.hand = [];
 }
 
 Participant.prototype.hit = function() {
@@ -50,21 +79,15 @@ Participant.prototype.score = function() {
 }
 
 function Player() {
-    Participant.call(this);
-      //STUB
-      // What sort of state does a player need?
-      // Score? Hand? Amount of money available?
+  Participant.call(this);
+  this.money = 0;
 }
   
 Player.prototype = Object.create(Participant.prototype);
 Player.prototype.constructor = Player;
 
 function Dealer() {
-    Participant.call(this);
-    // Very similar to a Player; do we need this?
-    //STUB
-    // What sort of state does a dealer need?
-    // Score? Hand? Deck of cards? Bow tie?
+  Participant.call(this);
 }
 
 Dealer.prototype = Object.create(Participant.prototype);
@@ -78,55 +101,75 @@ Dealer.prototype.reveal = function() {
     
 }
 
-Dealer.prototype.deal = function() {
-    
-}
-
 function TwentyOneGame() {
-    this.deck = new Deck();
-    this.player = new Player();
-    this.dealer = new Dealer();
-      //STUB
-      // What sort of state does the game need?
-      // A deck? Two participants?
+  this.deck = new Deck();
+  this.player = new Player();
+  this.dealer = new Dealer();
 }
 
 TwentyOneGame.prototype.start = function() {
-    this.displayWelcomeMessage();
-    this.dealCards();
-    this.showCards();
-    this.playerTurn();
-    this.dealerTurn();
-    this.displayResult();
-    this.displayGoodbyeMessage();
+  this.displayWelcomeMessage();
+  this.dealCards();
+  this.showCards();
+  this.playerTurn();
+  this.dealerTurn();
+  this.displayResult();
+  this.displayGoodbyeMessage();
 }
 
 TwentyOneGame.prototype.dealCards = function() {
-
+  for (let cardsDealt = 1; cardsDealt <= 2; cardsDealt += 1) {
+    this.deck.deal(this.player);
+    this.deck.deal(this.dealer);
+  }
 }
 
 TwentyOneGame.prototype.showCards = function() {
-    
+  let playerHand = this.player.hand.map(card => `${card.name} of ${card.suit}`);
+  let dealerHand = this.dealer.hand.map((card, indx) => {
+    if (indx === 0) {
+      return 'Unknown Card';
+    } else {
+      return `${card.name} of ${card.suit}`;
+    }
+  })
+  console.log('Your hand: ' + this.joinAnd(playerHand));
+  console.log("Dealer's hand: " + this.joinAnd(dealerHand));
+}
+
+TwentyOneGame.prototype.joinAnd = function(array, divider = ', ', statement = 'and') {
+  switch (array.length) {
+    case 1:
+      return array;
+    case 2:
+      return `${array[0]} ${statement} ${array[1]}`;
+    default:
+      return `${array.slice(0, array.length - 1).join(divider)}${divider}${statement} ${array[array.length - 1]}`;
+  }
 }
 
 TwentyOneGame.prototype.playerTurn = function() {
-    
+
 }
 
 TwentyOneGame.prototype.dealerTurn = function() {
-    
+
 }
 
 TwentyOneGame.prototype.displayWelcomeMessage = function() {
-    
+  console.log('Welcome to Twenty One!');
 }
 
 TwentyOneGame.prototype.displayGoodbyeMessage = function() {
-    
+  console.log('Thanks for playing Twenty One!');
 }
 
 TwentyOneGame.prototype.displayResult = function() {
     
+}
+
+TwentyOneGame.prototype.playAgain = function() {
+
 }
   
 let game = new TwentyOneGame();
