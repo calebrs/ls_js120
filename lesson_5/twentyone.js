@@ -89,7 +89,7 @@ Participant.prototype.score = function() {
 
 function Player() {
   Participant.call(this);
-  this.money = 0;
+  this.money = 5;
 }
   
 Player.prototype = Object.create(Participant.prototype);
@@ -121,7 +121,7 @@ TwentyOneGame.prototype.start = function() {
   while (true) {
     this.dealCards();
     this.showCards();
-    this.playerTurn();
+    this.playerTurn(); 
     this.dealerTurn();
     this.displayResult();
     if (this.playAgain()) {
@@ -143,7 +143,6 @@ TwentyOneGame.prototype.dealCards = function() {
 }
 
 TwentyOneGame.prototype.showCards = function(isDealerTurn) {
-  console.clear();
   this.showPlayerCards();
   this.showDealerCards(isDealerTurn);
 }
@@ -232,22 +231,31 @@ TwentyOneGame.prototype.displayResult = function() {
   
   if (this.player.isBusted() || (!this.dealer.isBusted() && dealerScore > playerScore)) {
     console.log('Dealer wins!');
+    this.player.money -= 1;
   } else if (playerScore === dealerScore) {
     console.log(`It's a tie!`);
   } else {
     console.log('You win!');
+    this.player.money += 1;
   }
 }
 
 TwentyOneGame.prototype.playAgain = function() {
   let choice;
+  console.log(`You have ${this.player.money} dollars.`);
+  
+  if (this.player.money === 0) {
+    return false;
+  } else if (this.player.money === 10) {
+    console.log(`You're rich!`);
+  }
 
-    while (true) {
-      choice = readline.question("Play again? (y/n): ").toLowerCase();
-      if (choice === 'y' || choice === 'n') break;
-      console.log('Invalid Input.');
-    }
-    return choice === 'y';
+  while (true) {
+    choice = readline.question("Pay 1 dollar to play again? (y/n): ").toLowerCase();
+    if (choice === 'y' || choice === 'n') break;
+    console.log('Invalid Input.');
+  }
+  return choice === 'y';
 }
   
 let game = new TwentyOneGame();
@@ -256,6 +264,7 @@ game.start();
 /*
 TODO:
 implement money into the game
+get display welcome to work.
 refactor - remove reduntant code and unused functions, look at student solutions, look at LS solution
 
 
