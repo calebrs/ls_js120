@@ -44,9 +44,11 @@ Deck.prototype.initialize52CardDeck = function() {
 
       if (newCard.name === 'Queen' || newCard.name === 'King' || newCard.name === 'Jack') {
         newCard.value = 10;
-      } else {
+      } else if (newCard.name === 'Ace') {
+          newCard.value = 11;
+        } else {
         newCard.value = card;
-      }
+        }
       newDeck.push(newCard);
     }
   }
@@ -75,10 +77,13 @@ Participant.prototype.isBusted = function() {
 }
 
 Participant.prototype.score = function() {
-  let score = this.hand.reduce((total, card) => {
-    return card.value + total;
-  }, 0)
-  let numberOfAces = this.hand.filter(card => card.name === 'Ace').length;
+  let valuesArray = this.hand.map(card => card.value);
+  let score = valuesArray.reduce((total, val) => total + val, 0);
+  
+  valuesArray.filter(val => val === 11).forEach(_ => {
+    if (score > 21) score -= 10;
+  });
+  
   return score;
 }
 
@@ -113,11 +118,20 @@ function TwentyOneGame() {
 
 TwentyOneGame.prototype.start = function() {
   this.displayWelcomeMessage();
-  this.dealCards();
-  this.showCards();
-  this.playerTurn();
-  this.dealerTurn();
-  this.displayResult();
+  while (true) {
+    this.dealCards();
+    this.showCards();
+    this.playerTurn();
+    this.dealerTurn();
+    this.displayResult();
+    if (this.playAgain()) {
+      this.deck = new Deck();
+      this.player.hand = [];
+      this.dealer.hand = [];
+    } else {
+      break;
+    }
+  }
   this.displayGoodbyeMessage();
 }
 
@@ -128,32 +142,31 @@ TwentyOneGame.prototype.dealCards = function() {
   }
 }
 
-TwentyOneGame.prototype.showCards = function() {
+TwentyOneGame.prototype.showCards = function(isDealerTurn) {
+  console.clear();
   this.showPlayerCards();
-  this.showDealerCards();
-  
+  this.showDealerCards(isDealerTurn);
 }
 
 TwentyOneGame.prototype.showPlayerCards = function() {
   let playerHand = this.player.hand.map(card => `${card.name} of ${card.suit}`);
   console.log('Your hand: ' + this.joinAnd(playerHand));
   console.log(`Your Score: ${this.player.score()}`);
+  if (this.player.isBusted()) {
+    console.log('You busted!');
+  }
 }
 
-TwentyOneGame.prototype.showDealerCards = function() {
+TwentyOneGame.prototype.showDealerCards = function(isDealerTurn = false) {
   let dealerHand = this.dealer.hand.map((card, indx) => {
-    if (indx === 0) {
+    if (indx === 0 && isDealerTurn === false) {
       return 'Unknown Card';
     } else {
       return `${card.name} of ${card.suit}`;
     }
-  })
+  });
   
   console.log("Dealer's hand: " + this.joinAnd(dealerHand));
-}
-
-TwentyOneGame.prototype.displayScores = function() {
-    //TODO
 }
 
 TwentyOneGame.prototype.joinAnd = function(array, divider = ', ', statement = 'and') {
@@ -168,36 +181,38 @@ TwentyOneGame.prototype.joinAnd = function(array, divider = ', ', statement = 'a
 }
 
 TwentyOneGame.prototype.playerTurn = function() {
-    while (true) {
+    while (!this.player.isBusted()) {
       console.log('Hit or stay? (h/s): ');
       let answer = readline.question().toLowerCase();
       if (answer === 'h') {
         this.deck.deal(this.player);
-        this.showPlayerCards();
+        this.showCards();
       } else if (answer === 's') {
         break;
-      }
-
-      if (this.player.isBusted()) {
-        console.log('You bust!');
-        break;
+      } else {
+        console.log('Invalid Input');
       }
     }
 }
 
 TwentyOneGame.prototype.dealerTurn = function() {
-  while (true) {
-    if (this.dealer.score() < 17) {
-      this.deck.deal(this.dealer);
-      this.showDealerCards();
-    } else {
-      break;
+  if (!this.player.isBusted()) {
+    while (true) {
+      if (this.dealer.score() < 17) {
+        this.deck.deal(this.dealer);
+        this.showCards(true);
+      } else {
+        this.showCards(true);
+        break;
+      }
+  
+      if (this.dealer.isBusted()) {
+        console.log('Dealer busts!');
+        break;
+      }
     }
-
-    if (this.dealer.isBusted()) {
-      console.log('Dealer busts!');
-      break;
-    }
+  } else {
+    this.showCards(true);
   }
 }
 
@@ -210,12 +225,39 @@ TwentyOneGame.prototype.displayGoodbyeMessage = function() {
 }
 
 TwentyOneGame.prototype.displayResult = function() {
-    
+  let playerScore = this.player.score();
+  let dealerScore = this.dealer.score();
+  console.log(`Your Score: ${playerScore}`);
+  console.log(`Dealer Score: ${dealerScore}`);
+  
+  if (this.player.isBusted() || (!this.dealer.isBusted() && dealerScore > playerScore)) {
+    console.log('Dealer wins!');
+  } else if (playerScore === dealerScore) {
+    console.log(`It's a tie!`);
+  } else {
+    console.log('You win!');
+  }
 }
 
 TwentyOneGame.prototype.playAgain = function() {
+  let choice;
 
+    while (true) {
+      choice = readline.question("Play again? (y/n): ").toLowerCase();
+      if (choice === 'y' || choice === 'n') break;
+      console.log('Invalid Input.');
+    }
+    return choice === 'y';
 }
   
 let game = new TwentyOneGame();
 game.start();
+
+/*
+TODO:
+implement money into the game
+refactor - remove reduntant code and unused functions, look at student solutions, look at LS solution
+
+
+
+*/
