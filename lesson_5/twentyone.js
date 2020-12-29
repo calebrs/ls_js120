@@ -71,11 +71,15 @@ Participant.prototype.stay = function() {
 }
 
 Participant.prototype.isBusted = function() {
-
+  return this.score() > 21;
 }
 
 Participant.prototype.score = function() {
-
+  let score = this.hand.reduce((total, card) => {
+    return card.value + total;
+  }, 0)
+  let numberOfAces = this.hand.filter(card => card.name === 'Ace').length;
+  return score;
 }
 
 function Player() {
@@ -125,7 +129,18 @@ TwentyOneGame.prototype.dealCards = function() {
 }
 
 TwentyOneGame.prototype.showCards = function() {
+  this.showPlayerCards();
+  this.showDealerCards();
+  
+}
+
+TwentyOneGame.prototype.showPlayerCards = function() {
   let playerHand = this.player.hand.map(card => `${card.name} of ${card.suit}`);
+  console.log('Your hand: ' + this.joinAnd(playerHand));
+  console.log(`Your Score: ${this.player.score()}`);
+}
+
+TwentyOneGame.prototype.showDealerCards = function() {
   let dealerHand = this.dealer.hand.map((card, indx) => {
     if (indx === 0) {
       return 'Unknown Card';
@@ -133,8 +148,12 @@ TwentyOneGame.prototype.showCards = function() {
       return `${card.name} of ${card.suit}`;
     }
   })
-  console.log('Your hand: ' + this.joinAnd(playerHand));
+  
   console.log("Dealer's hand: " + this.joinAnd(dealerHand));
+}
+
+TwentyOneGame.prototype.displayScores = function() {
+    //TODO
 }
 
 TwentyOneGame.prototype.joinAnd = function(array, divider = ', ', statement = 'and') {
@@ -149,11 +168,37 @@ TwentyOneGame.prototype.joinAnd = function(array, divider = ', ', statement = 'a
 }
 
 TwentyOneGame.prototype.playerTurn = function() {
+    while (true) {
+      console.log('Hit or stay? (h/s): ');
+      let answer = readline.question().toLowerCase();
+      if (answer === 'h') {
+        this.deck.deal(this.player);
+        this.showPlayerCards();
+      } else if (answer === 's') {
+        break;
+      }
 
+      if (this.player.isBusted()) {
+        console.log('You bust!');
+        break;
+      }
+    }
 }
 
 TwentyOneGame.prototype.dealerTurn = function() {
+  while (true) {
+    if (this.dealer.score() < 17) {
+      this.deck.deal(this.dealer);
+      this.showDealerCards();
+    } else {
+      break;
+    }
 
+    if (this.dealer.isBusted()) {
+      console.log('Dealer busts!');
+      break;
+    }
+  }
 }
 
 TwentyOneGame.prototype.displayWelcomeMessage = function() {
