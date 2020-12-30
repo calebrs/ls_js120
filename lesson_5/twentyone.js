@@ -1,10 +1,5 @@
 let readline = require("readline-sync");
 let shuffle = require("shuffle-array");
-const NUMBER_OF_CARDS_IN_A_SUIT = 13;
-const NUMBER_OF_SUITS = 4;
-const SUITS = ['Spades', 'Hearts', 'Clubs', 'Diamonds'];
-const RANKS = ['Ace', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'Jack', 'King', 'Queen'];
-const VALUES = [11, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10];
 
 function Card(suit, rank, value) {
   this.suit = suit;
@@ -12,13 +7,20 @@ function Card(suit, rank, value) {
   this.value = value;
 }
 
+Card.SUITS = ['Spades', 'Hearts', 'Clubs', 'Diamonds'];
+Card.RANKS = ['Ace', '2', '3', '4', '5', '6', '7', '8',
+  '9', '10', 'Jack', 'King', 'Queen'];
+Card.VALUES = [11, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10];
+
 function Deck() {
   this.cards = [];
-  SUITS.forEach(suit => {
-    RANKS.forEach((rank, indx) => {
-      this.cards.push(new Card(suit, rank, VALUES[indx]))
+  Card.SUITS.forEach(suit => {
+    Card.RANKS.forEach((rank, indx) => {
+      this.cards.push(new Card(suit, rank, Card.VALUES[indx]));
     });
   });
+
+  shuffle(this.cards);
 }
 
 Deck.prototype.deal = function(player) {
@@ -38,7 +40,7 @@ Participant.prototype.stay = function() {
 };
 
 Participant.prototype.isBusted = function() {
-  return this.score() > 21;
+  return this.score() > TwentyOneGame.TARGET_SCORE;
 };
 
 Participant.prototype.score = function() {
@@ -46,7 +48,7 @@ Participant.prototype.score = function() {
   let score = valuesArray.reduce((total, val) => total + val, 0);
 
   valuesArray.filter(val => val === 11).forEach(_ => {
-    if (score > 21) score -= 10;
+    if (score > TwentyOneGame.TARGET_SCORE) score -= 10;
   });
 
   return score;
@@ -67,19 +69,15 @@ function Dealer() {
 Dealer.prototype = Object.create(Participant.prototype);
 Dealer.prototype.constructor = Dealer;
 
-Dealer.prototype.hide = function() {
-
-};
-
-Dealer.prototype.reveal = function() {
-
-};
-
 function TwentyOneGame() {
   this.deck = new Deck();
   this.player = new Player();
   this.dealer = new Dealer();
 }
+
+TwentyOneGame.TARGET_SCORE = 21;
+TwentyOneGame.FIRST_DEAL = 2;
+TwentyOneGame.DEALER_STAYS_SCORE = 17;
 
 TwentyOneGame.prototype.start = function() {
   this.displayWelcomeMessage();
@@ -90,9 +88,7 @@ TwentyOneGame.prototype.start = function() {
     this.dealerTurn();
     this.displayResult();
     if (this.playAgain()) {
-      this.deck = new Deck();
-      this.player.hand = [];
-      this.dealer.hand = [];
+      this.resetGame();
     } else {
       break;
     }
@@ -100,8 +96,14 @@ TwentyOneGame.prototype.start = function() {
   this.displayGoodbyeMessage();
 };
 
+TwentyOneGame.prototype.resetGame = function() {
+  this.deck = new Deck();
+  this.player.hand = [];
+  this.dealer.hand = [];
+};
+
 TwentyOneGame.prototype.dealCards = function() {
-  for (let cardsDealt = 1; cardsDealt <= 2; cardsDealt += 1) {
+  for (let count = 1; count <= TwentyOneGame.FIRST_DEAL; count += 1) {
     this.deck.deal(this.player);
     this.deck.deal(this.dealer);
   }
@@ -133,14 +135,18 @@ TwentyOneGame.prototype.showDealerCards = function(isDealerTurn = false) {
   console.log("Dealer's hand: " + this.joinAnd(dealerHand));
 };
 
-TwentyOneGame.prototype.joinAnd = function(array, divider = ', ', statement = 'and') {
-  switch (array.length) {
+TwentyOneGame.prototype.displayMoney = function() {
+  console.log(`You have ${this.player.money} dollars.` );
+};
+
+TwentyOneGame.prototype.joinAnd = function(arr, div = ', ', stmnt = 'and') {
+  switch (arr.length) {
     case 1:
-      return array;
+      return arr;
     case 2:
-      return `${array[0]} ${statement} ${array[1]}`;
+      return `${arr[0]} ${stmnt} ${arr[1]}`;
     default:
-      return `${array.slice(0, array.length - 1).join(divider)}${divider}${statement} ${array[array.length - 1]}`;
+      return `${arr.slice(0, arr.length - 1).join(div)}${div}${stmnt} ${arr[arr.length - 1]}`;
   }
 };
 
@@ -157,12 +163,13 @@ TwentyOneGame.prototype.playerTurn = function() {
       console.log('Invalid Input');
     }
   }
+  console.clear();
 };
 
 TwentyOneGame.prototype.dealerTurn = function() {
   if (!this.player.isBusted()) {
     while (true) {
-      if (this.dealer.score() < 17) {
+      if (this.dealer.score() < TwentyOneGame.DEALER_STAYS_SCORE) {
         this.deck.deal(this.dealer);
         this.showCards(true);
       } else {
@@ -194,7 +201,7 @@ TwentyOneGame.prototype.displayResult = function() {
   console.log(`Your Score: ${playerScore}`);
   console.log(`Dealer Score: ${dealerScore}`);
 
-  if (this.player.isBusted() || (!this.dealer.isBusted() && dealerScore > playerScore)) {
+  if (this.dealerWins()) {
     console.log('Dealer wins!');
     this.player.money -= 1;
   } else if (playerScore === dealerScore) {
@@ -205,32 +212,29 @@ TwentyOneGame.prototype.displayResult = function() {
   }
 };
 
+TwentyOneGame.prototype.dealerWins = function() {
+  return this.player.isBusted() ||
+        (!this.dealer.isBusted() && this.dealer.score() > this.player.score());
+};
+
+TwentyOneGame.prototype.isRichOrPoor = function() {
+  return this.player.money === 10 || this.player.money === 0;
+};
+
 TwentyOneGame.prototype.playAgain = function() {
   let choice;
-  console.log(`You have ${this.player.money} dollars.`);
-
-  if (this.player.money === 0) {
-    return false;
-  } else if (this.player.money === 10) {
-    console.log(`You're rich!`);
-  }
+  this.displayMoney();
 
   while (true) {
-    choice = readline.question("Pay 1 dollar to play again? (y/n): ").toLowerCase();
+    console.log("Pay 1 dollar to play again? (y/n): ");
+    choice = readline.question().toLowerCase();
     if (choice === 'y' || choice === 'n') break;
     console.log('Invalid Input.');
   }
+
+  console.clear();
   return choice === 'y';
 };
 
 let game = new TwentyOneGame();
 game.start();
-
-/*
-TODO:
-implement money into the game
-get display welcome to work.
-refactor - remove reduntant code and unused functions, look at student solutions, look at LS solution
-
-
-*/
