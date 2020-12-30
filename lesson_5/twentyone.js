@@ -85,7 +85,7 @@ TwentyOneGame.prototype.start = function() {
       break;
     }
   }
-  
+
   this.displayGoodbyeMessage();
 };
 
@@ -218,8 +218,9 @@ TwentyOneGame.prototype.isRichOrPoor = function() {
 };
 
 TwentyOneGame.prototype.isStartOfGame = function() {
-  return this.player.hand.length === TwentyOneGame.TWO_CARDS && this.dealer.hand.length === TwentyOneGame.TWO_CARDS;
-}
+  return this.player.hand.length === TwentyOneGame.TWO_CARDS &&
+         this.dealer.hand.length === TwentyOneGame.TWO_CARDS;
+};
 
 TwentyOneGame.prototype.playAgain = function() {
   let choice;
