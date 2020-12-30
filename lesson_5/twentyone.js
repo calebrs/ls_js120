@@ -31,14 +31,6 @@ function Participant() {
   this.hand = [];
 }
 
-Participant.prototype.hit = function() {
-
-};
-
-Participant.prototype.stay = function() {
-
-};
-
 Participant.prototype.isBusted = function() {
   return this.score() > TwentyOneGame.TARGET_SCORE;
 };
@@ -76,11 +68,10 @@ function TwentyOneGame() {
 }
 
 TwentyOneGame.TARGET_SCORE = 21;
-TwentyOneGame.FIRST_DEAL = 2;
+TwentyOneGame.TWO_CARDS = 2;
 TwentyOneGame.DEALER_STAYS_SCORE = 17;
 
 TwentyOneGame.prototype.start = function() {
-  this.displayWelcomeMessage();
   while (true) {
     this.dealCards();
     this.showCards();
@@ -88,11 +79,13 @@ TwentyOneGame.prototype.start = function() {
     this.dealerTurn();
     this.displayResult();
     if (this.playAgain()) {
+      console.clear();
       this.resetGame();
     } else {
       break;
     }
   }
+  
   this.displayGoodbyeMessage();
 };
 
@@ -103,13 +96,17 @@ TwentyOneGame.prototype.resetGame = function() {
 };
 
 TwentyOneGame.prototype.dealCards = function() {
-  for (let count = 1; count <= TwentyOneGame.FIRST_DEAL; count += 1) {
+  for (let count = 1; count <= TwentyOneGame.TWO_CARDS; count += 1) {
     this.deck.deal(this.player);
     this.deck.deal(this.dealer);
   }
 };
 
 TwentyOneGame.prototype.showCards = function(isDealerTurn) {
+  console.clear();
+  if (this.isStartOfGame()) {
+    this.displayWelcomeMessage();
+  }
   this.showPlayerCards();
   this.showDealerCards(isDealerTurn);
 };
@@ -163,7 +160,6 @@ TwentyOneGame.prototype.playerTurn = function() {
       console.log('Invalid Input');
     }
   }
-  console.clear();
 };
 
 TwentyOneGame.prototype.dealerTurn = function() {
@@ -221,6 +217,10 @@ TwentyOneGame.prototype.isRichOrPoor = function() {
   return this.player.money === 10 || this.player.money === 0;
 };
 
+TwentyOneGame.prototype.isStartOfGame = function() {
+  return this.player.hand.length === TwentyOneGame.TWO_CARDS && this.dealer.hand.length === TwentyOneGame.TWO_CARDS;
+}
+
 TwentyOneGame.prototype.playAgain = function() {
   let choice;
   this.displayMoney();
@@ -232,7 +232,6 @@ TwentyOneGame.prototype.playAgain = function() {
     console.log('Invalid Input.');
   }
 
-  console.clear();
   return choice === 'y';
 };
 
