@@ -10,10 +10,21 @@ let qux = Object.create(baz);
 qux.name = 'qux';
 
 Object.prototype.ancestors = function() {
+  let result = [];
+  let ancestor = Object.getPrototypeOf(this);
   
+  while (true) {
+    if (ancestor.hasOwnProperty('ancestors')) {
+      result.push('Object.prototype');
+      break;
+    }
+    result.push(ancestor.name);
+    ancestor = Object.getPrototypeOf(ancestor);
+  }
+  return result;
 }
 
 console.log(qux.ancestors());  // returns ['baz', 'bar', 'foo', 'Object.prototype']
-baz.ancestors();  // returns ['bar', 'foo', 'Object.prototype']
-bar.ancestors();  // returns ['foo', 'Object.prototype']
-foo.ancestors();  // returns ['Object.prototype']
+// baz.ancestors();  // returns ['bar', 'foo', 'Object.prototype']
+// bar.ancestors();  // returns ['foo', 'Object.prototype']
+// foo.ancestors();  // returns ['Object.prototype']
