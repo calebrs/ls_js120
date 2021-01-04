@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "readline-sync": "^1.4.10",
-    "shuffle-array": "^1.0.1"
-  }
-}

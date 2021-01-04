@@ -1,8 +1,8 @@
-function myFilter(array, func, filter) {
+function myFilter(array, func, thisArg) {
   let result = [];
 
-  array.forEach(value => {
-    if (func.call(filter, this.allowedValues)) {
+  array.forEach(function(value) {
+    if (func.call(thisArg, value)) {
       result.push(value);
     }
   });
