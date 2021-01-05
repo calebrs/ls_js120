@@ -13,8 +13,7 @@ const cat = {
   },
 };
 
-Answer: This code defines an object called `cat` with the const keyword. `cat` has two propterties who's values are methods: `name` and `age`. When the name method is called it returns the string butterscotcha and similarly, 
-when the method age() is called, will return the number 13. This code domonstrates the typical structure of a javascript object and also a the shorthand way of defining methods within a Javasctript object.
+Answer:
 
 2. How would you modify line 5 of this program so that it returns the desired value? write a solution that create the correct result.
 
@@ -29,10 +28,9 @@ let book = {
 // desired return value: 'Snow Crash by Neal Stephenson'
 book.getDescription(); // => ReferenceError: title is not defined
 
-Answer: Currently ,this code will will raise a reference error, stating that title and author are not defined. This is becuase simply using `title` or `author` as variables does not reference the properties on the book object
-to fix this code, you must change `title` to this.title and author to this.author. `this` references the book object, so this.title will reference the value of the `title` property on the book object.
+Answer:
 
-3. Describe how the the value cat in the pete object is a collaberator object. How would you call the makeNoise method on pete's cat?
+3. Describe how the the value cat in the pete object is a collaboerator object. How would you call the makeNoise method on pete's cat?
 
 let cat = {
   name: 'Fluffy',
@@ -56,8 +54,7 @@ let pete = {
   },
 };
 
-Answer: the `cat` object, which is the value of the `pete` objects `pet` property, acts as a reference and collaberator with the `cat` object which is declared above the `pete` object. Becuase `cat` is a value
-inside of the `pete` object we can call the methods on `cat` through `pete` like this: pete.pet.eat(). You could also say that the `pet` property links pete with the cat object. 
+Answer:
 
 4.Describe the raceCar object. Also, name all of the state and behavior of the raceCar object.
 
