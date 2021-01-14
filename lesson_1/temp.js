@@ -1,32 +1,21 @@
-function createCar(make, fuelLevel, engineOn) {
-
-  return {
-    make: make,
-    fuelLevel: fuelLevel,
-    engineOn: engineOn,
-
-    startEngine() {
-      this.engineOn = true;
-    },
-
-    drive() {
-      this.fuelLevel -= 0.1;
-    },
-
-    stopEngine() {
-      this.engineOn = false;
-    },
-
-    refuel(percent) {
-      if ((this.fuelLevel + (percent / 100)) <= 1) {
-        this.fuelLevel += (percent / 100);
-      } else {
-        this.fuelLevel = 1;
-      }
-    },
+class Person {
+  static people = [];
+  
+  constructor(name, age) {
+    this.name = name;
+    this.age = age;
+    Person.people.push(this);
   }
-
+  
+  talk() {
+    console.log(`I am ${this.name}`);
+  }
+  
+  static listPeople() {
+    console.log(Person.people.map(person => person.name).join(', '));
+  }
 }
 
-let raceCar1 = createCar('Jaguar', 0.4, false);
-console.log(raceCar1);
+let caleb = new Person('Caleb', 25);
+let nathan = new Person('Nathan', '30');
+Person.listPeople();

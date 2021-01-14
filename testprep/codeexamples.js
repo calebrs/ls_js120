@@ -187,9 +187,9 @@ let obj1 = {
   }
 }
 
-// obj1.doSomthing();
+obj1.doSomthing();
 let newFunc = obj1.doSomthing.bind(obj1); // loses context
-// newFunc();
+newFunc();
 
 // examples of context loss from function not using surrounding context ----------------------------------------------
 
@@ -201,11 +201,11 @@ let obj2 = {
       console.log(this.name);
     }
     
-    hello(); //becuase of how this is invoked, it executes with the global object as its execution context. 
+    // hello(); // becasue we use an arrow function, the hello function will be able to access the name property on obj2 
   }
 }
 
-// obj2.doSomthing();
+obj2.doSomthing();
 // arrow function
 // use self variable
 // call
@@ -222,13 +222,12 @@ let obj3 = {
   }
 }
 
-function callFunc(func, context) {
-  func.call(context);
-}
-
-callFunc(obj3.doSomthing, obj3); // looses context when passed as an argument
+// obj3.doSomthing() // implicit execution context
+// obj3.doSomthing.call(obj3);  // explicit execution context
 
 // use the bind method
 // create a context argument for you function
 
 // built0in constructors ----------------------------------------------
+
+
