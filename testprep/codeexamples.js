@@ -187,9 +187,9 @@ let obj1 = {
   }
 }
 
-obj1.doSomthing();
-let newFunc = obj1.doSomthing.bind(obj1); // loses context
-newFunc();
+obj1.doSomthing();  //returns obj1
+let newFunc = obj1.doSomthing.bind(obj1); //binds doSomthing to obj1
+newFunc(); //returns obj1
 
 // examples of context loss from function not using surrounding context ----------------------------------------------
 
