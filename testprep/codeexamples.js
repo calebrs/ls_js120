@@ -1,233 +1,336 @@
-// create code examples of all the flashcards, reread the stduy guide
-//Example of a javascript object
+// Today: Go through all flahscards and craeate code examples for each card
+// Briefly scan through written exam
+// reread the interview prep page
 
-let obj = {
-  name: 'Caleb',
-  age: 25,
-  
-  speak() {
-    console.log('blah, blah, blah');
-  },
-  
-  talk: function() {
-    console.log('blah, blah');
-  }
-}
+//Examples:
 
-// example of js factory function ---------------------------------------------------
+// Javascript Objects, what are they, how do they work? -----------------
 
-function createPerson(name, age, profession) {
-  return {
-    name,
-    age,
-    profession,
-    
-    introduce() {
-      console.log(`I am ${this.name}. I am ${this.age} years old and am a ${this.profession} by profession.`)
-    }
-  }
-}
+// let num = 25; //primitive data type
+// let obj = {
+//   age: 25,
+//   greeting: 'Hello',
 
-// let caleb = createPerson('Caleb', 25, 'Analyst');
-// caleb.introduce();
+//   sayHi: function() {
+//     console.log('Hi');
+//   }
+// }
 
-//ES6 class example -------------------------------------------------------
+// obj.sayHi();
 
-class Person {
-  // static people = []; // this throws an error in cloud9 but works in VScode.
-  
-  constructor(name, age) {
-    this.name = name;
-    this.age = age;
-    // Person.people.push(this);
-  }
-  
-  talk() {
-    console.log(`I am ${this.name}`);
-  }
-  
-  static listPeople() {
-    console.log(Person.people.map(person => person.name).join(', '));
-  }
-}
+// Object Factories why use them, what are they? ------------------------------------
 
-let caleb = new Person('Caleb', 25);
-let nathan = new Person('Nathan', 30);
-// Person.listPeople(); // Caleb, Nathan
-// console.log(caleb.constructor.name === 'Person'); //true
-// console.log(Object.getPrototypeOf(caleb));
+// function createPerson(name, age) {
+//   return {
+//     name, 
+//     age,
 
-// Objects linked with other objects OLOO -------------------------------------
+//     walk() {
+//       console.log('walking...');
+//     }
+//   }
+// }
 
-let personPrototype = {
-  init(name, age) {
-    this.name = name;
-    this.age = age;
-    return this;
-  },
-  
-  talk() {
-    console.log(`I am ${this.name}`);
-  }
-}
+// let caleb = createPerson('caleb', '25');
+// caleb.walk();
 
-// let jimbo = Object.create(personPrototype).init('Jimbo', 32);
-// jimbo.talk();
-// console.log(jimbo.constructor.name === 'Object'); //true
+//constructors: What are they how are they different from factory functions? ----------------------------------
 
-// Prototypal/psudoclassical inheritance -------------------------------------
+// function Person(name, age) {
+//   this.name = name;
+//   this.age = age;
+// }
 
-function Vehicle(name, wheels) {
-  this.wheels = wheels;
-  this.name = name;
-}
+// Person.prototype.sayName = function() {
+//   console.log(`I am ${this.name}`);
+// }
 
-Vehicle.prototype.info = function() {
-  console.log(`Name: ${this.name} Number of Wheels: ${this.wheels}`);
-}
-
-function Truck(name, wheels, haulWeight) {
-  Vehicle.call(this, name, wheels);
-  this.haulWeight = haulWeight;
-}
-
-Truck.prototype = Object.create(Vehicle.prototype);
-// console.log(Truck.prototype.constructor.name);
-Truck.prototype.constructor = Truck;
-
-Truck.prototype.pull = function() {
-  console.log('pulling...');
-}
+// let caleb = new Person('Caleb', 25);
+// console.log(Object.getPrototypeOf(caleb) === Person.prototype);
+// console.log(caleb.hasOwnProperty('name'));
+// caleb.sayName();
 
 
-let newTruck = new Truck('Ford', 6, 150);
-// newTruck.info();
+//Prototypes, what are they? ----------------------------------
+// prototype may refer to two different things: the object that an objects __proto__ referes to, or the prototype property on functions.
 
-// mixins --------------------------------------
+// let obj = { // constructor, __proto__ are the hidden properties on a JS object
+//   name: 'Caleb',
+//   age: 25,
+// }
 
-let swimMixin = {
-  swim() {
-    console.log('swimming...');
-  }
-}
+// console.log(Object.getPrototypeOf(obj) === Object.prototype);
 
-class Animal {
-  
-}
+//OLOO why use it, how does it work? ----------------------------------
 
-class Mammal extends Animal {
-  
-}
+// let objPrototype = {
+//   init(name, age) {
+//     this.name = name;
+//     this.age = age;
+//     return this;
+//   },
 
-class Platypus extends Mammal {
-  // swim() {
-  //   console.log('Swimming...');
-  // }
-}
-Object.assign(Platypus.prototype, swimMixin);
+//   sayHi() {
+//     console.log(`I am ${this.name}`);
+//   }
+// }
 
-class Fish extends Animal {
-  // swim() {
-  //   console.log('Swimming...')
-  // }
-}
-Object.assign(Fish.prototype, swimMixin);
+// let caleb = Object.create(objPrototype).init('Caleb', 25);
+// caleb.sayHi();
 
-let perry = new Platypus();
-let fish = new Fish();
-// perry.swim();
+//ES6 classes ----------------------------------
+
+// class Person {
+//   static property = "I am the Person Object";
+
+//   constructor(name, age) {
+//     this.name = name;
+//     this.age = age;
+//   }
+
+//   sayHi() {
+//     console.log(`I am ${this.name}`);
+//   }
+// }
+
+// let caleb = new Person('Caleb', 25);
+// caleb.sayHi();
+
+//Static Methods and properties on, OLOO, psuedoclassical, ES6 classes ----------------------------------
+
+// class Person {
+//   static name = 'Person';
+// }
+
+// function Person2() {
+
+// }
+
+// Person2.name = 'Person2';
+
+// let personPrototype = {
+//   name: 'PersonPrototype',
+// }
+//NOTE: methods are declated the same way as the properties in this example.
+// Prototypal vs psudo-classical inheritance ----------------------------------
+// // prototypal delegation:
+// let obj1 = {a: 1, b: 2};
+// let obj2 = Object.create(obj1);
+// console.log(obj2.b); //Js first looks inside of obj2 for b, but does not find it. Then, it looks in the prototype and finds it.
+// // obj2 => obj1
+
+// // refers to how constructors inherit method from eachother
+// // functions have a prototype property which is an object. That object inherits from a parent constructor's prototype property.
+// class Person {
+//   sayHi() {
+//     console.log('Hi!');
+//   }
+// }
+
+// class Student extends Person {
+// }
+
+// let caleb = new Student();
+// caleb.sayHi();
+// // caleb => Student.prototype => Person.prototype
+
+// Encapsulation, what is it? ----------------------------------
+// philosophy, that a thing is made up of state and behavior. This is the basis of OO in that everyting in a program can be made into an object that has state/properties and behavior/methods
+// let obj = {
+//   name: 'Caleb', // state
+
+//   walk() { //behavior
+//   }
+// }
+
+// Polymorphism: duck typing and inheritance -----------------------------------
+// is the ability for objects of different types to respond to the same call.
+// class Animal {
+//   move() {
+//     console.log(`moving`);
+//   }
+// }
+
+// class fish extends Animal {
+//   move() {
+//     console.log(`swimming`);
+//   }
+// }
+
+// class Mammal extends Animal {
+//   move() {
+//     console.log(`walking`);
+//   }
+// }
+
+// class Sloth extends Mammal {
+
+// }
+
+// let array = [new Sloth(), new fish()];
+// array.forEach(animal => animal.move());
+
+// collaborator object ----------------------------------
+// objects that serve as links between objects
+
+// let person = {
+//   name: 'Caleb',
+//   age: '25',
+// }
+
+// let pet = {
+//   name: 'Jimbo',
+//   owner: person,
+
+//   myOwner() {
+//     console.log(`My owner is: ${this.owner.name}`);
+//   }
+// }
+
+// pet.myOwner();
+
+// Mix-ins: single vs multiple inheritance. How does this work? ----------------------------------
+// Js does not support multiple inheritance. JS is only sing inheritance
+// let swimMixin = {
+//   swim() {
+//     console.log('swimming');
+//   }
+// }
+
+// class Organism {
+// }
+
+// class Fish extends Organism {
+// }
+// Object.assign(Fish.prototype, swimMixin);
+
+// class Mammal extends Organism {
+// }
+
+// class Dog extends Organism {
+// }
+// Object.assign(Dog.prototype, swimMixin);
+
+// let dog = new Dog();
+// dog.swim();
+
+// let fish = new Fish();
 // fish.swim();
 
-// polymorphism------------------------------------
-class Cat {
-  makeNoise() {
-    console.log('Meow!');
-  }
-}
+// execution context, the value of this ----------------------------------------------------------
+// The value of this, also refereed to as the execution context, is determined by how a method/functionm is invoked.
+// let obj = {
+//   name: 'Caleb',
 
-class Bird {
-   makeNoise() {
-    console.log('Chirp!');
-  }
-}
+//   sayName() {
+//     console.log(`I am ${this.name}`);
+//   }
+// }
 
-class Lizard {
-   makeNoise() {
-    console.log('Hissss!');
-  }
-}
+// obj.sayName(); // implicit execution context is obj. in other words this' value is 'obj'.
+// let func = obj.sayName;
+// func(); //implicit execution context is the global object.
 
-let animalArray = [new Cat(), new Bird(), new Lizard()];
-// animalArray.forEach(animal => animal.makeNoise());
+// inplicit execution context ----------------------------------------------------------
+// see above example. depends how the funciton is invoked. calling object is execution context or the global object when there is no claling object.
 
-// Collaborator Objects -------------------------------------
+// explicit exectuion context ----------------------------------------------------------
+// refers to when the developer explicitly states what the execution context should be.
+// use the call, apply, or bind JS methods to do this.
 
-let frog = {
-  name: 'froggy',
-  
-  makeSound() {
-    console.log('ribbit!');
-  }
-}
+// let obj = {
+//   name: 'Caleb',
 
-let owner = {
-  name: 'Caleb',
-  pet: frog,
-}
+//   sayName() {
+//     console.log(`I am ${this.name}`);
+//   }
+// }
 
-// owner.pet.makeSound();
+// obj.sayName(); // implicit execution context is obj. in other words this' value is 'obj'.
+// let func = obj.sayName; //loses context because a copy is created.
+// func.call(obj) // explicitly states that the execution context is obj.
 
-// Examples of coppied code context loss -----------------------------------------------------
+// Context loss 1: copying ----------------------------------------------------------
+// see the code above
 
-let obj1 = {
-  name: 'Caleb',
-  
-  doSomthing() {
-    console.log(this);
-  }
-}
+// context loss 2: not using surrounding context ----------------------------------------------------------
 
-obj1.doSomthing();  //returns obj1
-let newFunc = obj1.doSomthing.bind(obj1); //binds doSomthing to obj1
-newFunc(); //returns obj1
+// let obj = {
+//   name: 'Caleb',
 
-// examples of context loss from function not using surrounding context ----------------------------------------------
-
-let obj2 = {
-  name: 'Carson',
-  
-  doSomthing: function() {
-    let hello = () => {
-      console.log(this.name);
-    }
+//   whatAmI() {
+//     let iAm = () => {
+//       console.log(`I am ${this.name}`);  //loses context becuase the method does not use surrounding context.
+//     }
     
-    // hello(); // becasue we use an arrow function, the hello function will be able to access the name property on obj2 
-  }
-}
+//     iAm();
+//   }
+// }
 
-obj2.doSomthing();
-// arrow function
-// use self variable
-// call
-// bind
-// if availabe, use the thisArg argument.
+// obj.whatAmI();
 
-// examples of context loss from passing a function as a variable ------------------------------------------------
+// context loss 3: function passed as an argument ----------------------------------------------------------
 
-let obj3 = {
-  name: 'Carson',
+// let obj = {
+//   name: 'obj',
+
+//   doSomthing() {
+//     console.log(`This is: ${this.name}`);
+//   }
+// }
+
+// function callFunc(func) {
+//   func();
+// }
+
+// callFunc(obj.doSomthing.bind(obj)); //loses context
+
+//Function.prototype.call() ----------------------------------------------------------
+//call cuntion explicitly sets the execution context of a function. The second argument is used as  arguments for the called function
+// function whatIsThis() {
+//   console.log(this.name);
+// }
+
+// let obj = {
+//   name: "Caleb",
+// }
+
+// whatIsThis.call(obj); //used to call whatisThis with an execution context of obj.
+
+// Function.prototype.apply() ----------------------------------------------------------
+
+
+// Function.prototype.bind() ----------------------------------------------------------
+
+
+//Object.assign() ----------------------------------------------------------
+//copies all own properties from one object to another. first arg is target second is source.
+
+// let obj = {
+//   name: "Caleb",
+
+//   sayName() {
+//     console.log(`${this.name}`);
+//   }
+// }
+
+// let obj2 = {};
+// Object.assign(obj2, obj); //copies all props from obj to obj2.
+// console.log(obj2.hasOwnProperty('sayName')); //now has it's own properties.
+
+//Object.create() ----------------------------------------------------------
+// creates an empty object who's prototype is set to the input argument
+
+// let obj = {
+//   name: "Caleb",
   
-  doSomthing() {
-    console.log(this.name);
-  }
-}
+//   sayName() {
+//     console.log(`${this.name}`);
+//   }
+// }
 
-// obj3.doSomthing() // implicit execution context
-// obj3.doSomthing.call(obj3);  // explicit execution context
+// let obj2 = Object.create(obj);
+// console.log(obj2.hasOwnProperty('sayName'));
+// obj2.sayName();
 
-// use the bind method
-// create a context argument for you function
-
-// built0in constructors ----------------------------------------------
-
-
+//Object.getprototypeOf() ----------------------------------------------------------
